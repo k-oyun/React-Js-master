@@ -21,6 +21,7 @@ interface CircleProps {
     borderColor?: string;
   }
 
+// ??를 사용함으로써 bordercolor의 default를 bgColor로 사용 
 function Circle({ bgColor,borderColor}: CircleProps) {
   return <Container bgColor={bgColor} borderColor={borderColor ?? bgColor} />;
 }
