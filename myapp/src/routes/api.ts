@@ -1,6 +1,7 @@
 //react query를 위한 fetcher function
 //fetch coin이 url을 불러오고 url이 json을 리턴
 
+//ohlcv-api.nomadcoders.workers.dev?coinId=btc-bitcoin
 const BASE_URL = `https://api.coinpaprika.com/v1`;
 
 export function fetchCoins() {
@@ -23,6 +24,6 @@ export function fetchCoinHistory(coinId: string) {
   const endDate = Math.floor(Date.now() / 1000);
   const startDate = endDate - 60 * 60 * 24 * 7 * 2;
   return fetch(
-    `${BASE_URL}/coins/${coinId}/ohlcv/historical?start=${startDate}&end=${endDate}`
+    `$https://ohlcv-api.nomadcoders.workers.dev/coins/${coinId}/ohlcv/historical?start=${startDate}&end=${endDate}`
   ).then((response) => response.json());
 }
