@@ -1,6 +1,9 @@
 import styled, { createGlobalStyle } from "styled-components";
 import Router from "./Router";
 
+//api로부터 받는 query를 직접 확인하거나 refetch,fetch 할 수 있음
+import { ReactQueryDevtools } from "react-query/devtools";
+
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400&display=swap');
 html, body, div, span, applet, object, iframe,
@@ -55,9 +58,11 @@ table {
   box-sizing: border-box;
 }
 body{
+  font-weight: 300;
   font-family: 'Noto Sans KR', sans-serif;
   background-color: ${(props) => props.theme.bgColor};
   color: ${(props) => props.theme.textColor};
+  line-height: 1.2;
 }
 
 a{
@@ -71,6 +76,7 @@ function App() {
     <>
       <GlobalStyle />
       <Router />
+      <ReactQueryDevtools initialIsOpen={true} />
     </>
   );
 }

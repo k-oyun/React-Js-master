@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoins } from "./api";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -50,10 +52,10 @@ const Img = styled.img`
 `;
 //타입스크립트에게 어떻게 오는지 알려줘야함
 //받아오는 api를 타입스크립트가 이해할 수 있게 지정
-interface CoinInterface {
-  id: "string";
-  name: "string";
-  symbol: "string";
+interface ICoin {
+  id: string;
+  name: string;
+  symbol: string;
   rank: number;
   is_new: boolean;
   is_active: boolean;
@@ -61,33 +63,39 @@ interface CoinInterface {
 }
 
 function Coins() {
-  //타입스크립트에게 배열로 오는 것을 알려줘야함
-  const [coins, setCoins] = useState<CoinInterface[]>([]);
-  //loading상황에 loading메세지 출력을 위한 준비
-  const [loading, setLoading] = useState(true);
+  //key value로 지정
+  //react query가 api.ts를 수행하여 data에 저장
+  //isLoading은 그냥 fetch가 완료되었는가
+  //react query는 기존 방식과 다르게 데이터를 보존하기 때문에 뒤로 이동하였을때 로딩이 필요없음
+  //data를 받아 fetchcoin에 저장
+  const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
 
-  //컴포넌트가 렌더링 될때마다 특정 작업을 실행할 수 있도록 하는 hook
-  useEffect(() => {
-    //함수를 바로 실행하는 꿀팁
-    (async () => {
-      const response = await fetch("https://api.coinpaprika.com/v1/coins");
-      const json = await response.json();
-      //100개만 잘라서 가져오기
-      setCoins(json.slice(0, 100));
-      setLoading(false);
-    })();
-  }, []);
+  // //타입스크립트에게 배열로 오는 것을 알려줘야함
+  // const [coins, setCoins] = useState<CoinInterface[]>([]);
+  // //loading상황에 loading메세지 출력을 위한 준비
+  // const [loading, setLoading] = useState(true);
+
+  // //컴포넌트가 렌더링 될때마다 특정 작업을 실행할 수 있도록 하는 hook
+  // useEffect(() => {
+  //   //함수를 바로 실행하는 꿀팁
+  //   (async () => {
+
+  //     //100개만 잘라서 가져오기
+  //     setCoins(json.slice(0, 100)) ;
+  //     setLoading(false);
+  //   })();
+  // }, []);
   return (
     <Container>
       <Header>
         <Title>코인</Title>
       </Header>
 
-      {loading ? (
+      {isLoading ? (
         <Loader>Loading...</Loader>
       ) : (
         <CoinsList>
-          {coins.map((coin) => (
+          {data?.slice(0, 100).map((coin) => (
             <Coin key={coin.id}>
               <Link
                 to={{
