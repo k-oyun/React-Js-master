@@ -88,10 +88,6 @@ interface RouteState {
   name: string;
 }
 
-interface ICoinProps {
-  isDark: boolean;
-}
-
 //data type참고
 interface InfoData {
   id: string;
@@ -149,7 +145,7 @@ interface PriceData {
   };
 }
 
-function Coin({ isDark }: ICoinProps) {
+function Coin() {
   //파라미터를 가져와 return
   // const [loading, setLoading] = useState(true);
   // const [info, setInfo] = useState<InfoData>();
@@ -255,7 +251,7 @@ function Coin({ isDark }: ICoinProps) {
               <Price />
             </Route>
             <Route path={`/:coinId/chart`}>
-              <Chart isDark={isDark} coinId={coinId} />
+              <Chart coinId={coinId} />
             </Route>
           </Switch>
         </>

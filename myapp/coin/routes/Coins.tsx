@@ -63,12 +63,7 @@ interface ICoin {
   type: string;
 }
 
-//router로부터 받은 toggledark의 형을 지정
-interface ICoinsProps {
-  toggleDark: () => void;
-}
-
-function Coins({ toggleDark }: ICoinsProps) {
+function Coins() {
   //key value로 지정
   //react query가 api.ts를 수행하여 data에 저장
   //isLoading은 그냥 fetch가 완료되었는가
@@ -98,7 +93,6 @@ function Coins({ toggleDark }: ICoinsProps) {
       </Helmet>
       <Header>
         <Title>코인</Title>
-        <button onClick={toggleDark}>Toggle Mode</button>
       </Header>
 
       {isLoading ? (

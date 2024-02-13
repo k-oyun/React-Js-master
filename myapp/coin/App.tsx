@@ -1,10 +1,8 @@
-import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import Router from "./Router";
 
 //api로부터 받는 query를 직접 확인하거나 refetch,fetch 할 수 있음
 import { ReactQueryDevtools } from "react-query/devtools";
-import { darkTheme, lightTheme } from "./theme";
-import { useState } from "react";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400&display=swap');
@@ -74,18 +72,11 @@ a{
 `;
 
 function App() {
-  //다크모드, 라이트 모드를 위한 state
-  const [isDark, setIsDark] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  //isDark가 true이면 false를 return, false면 true를 리턴
-  const toggleDark = () => setIsDark((current) => !current);
   return (
     <>
-      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-        <GlobalStyle />
-        <Router isDark={isDark} toggleDark={toggleDark} />
-        <ReactQueryDevtools initialIsOpen={true} />
-      </ThemeProvider>
+      <GlobalStyle />
+      <Router />
+      <ReactQueryDevtools initialIsOpen={true} />
     </>
   );
 }
