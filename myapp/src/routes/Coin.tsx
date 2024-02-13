@@ -88,9 +88,7 @@ interface RouteState {
   name: string;
 }
 
-interface ICoinProps {
-  isDark: boolean;
-}
+interface ICoinProps {}
 
 //data type참고
 interface InfoData {
@@ -149,7 +147,7 @@ interface PriceData {
   };
 }
 
-function Coin({ isDark }: ICoinProps) {
+function Coin({}: ICoinProps) {
   //파라미터를 가져와 return
   // const [loading, setLoading] = useState(true);
   // const [info, setInfo] = useState<InfoData>();
@@ -178,7 +176,7 @@ function Coin({ isDark }: ICoinProps) {
     () => fetchCoinTickers(coinId),
     {
       //5초마다 위의 query fetch
-      refetchInterval: 5000,
+      refetchInterval: 10000,
     }
   );
 
@@ -255,7 +253,7 @@ function Coin({ isDark }: ICoinProps) {
               <Price />
             </Route>
             <Route path={`/:coinId/chart`}>
-              <Chart isDark={isDark} coinId={coinId} />
+              <Chart coinId={coinId} />
             </Route>
           </Switch>
         </>
