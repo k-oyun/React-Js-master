@@ -1,16 +1,12 @@
-import {
-  Draggable,
-  DragDropContext,
-  Droppable,
-  DropResult,
-} from "@hello-pangea/dnd";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { toDoState } from "./atoms";
+import Board from "./components/Board";
 
 const Wrapper = styled.div`
   display: flex;
-  max-width: 480px;
+  max-width: 680px;
   width: 100%;
   margin: 0 auto;
   justify-content: center;
@@ -20,65 +16,65 @@ const Wrapper = styled.div`
 
 const Boards = styled.div`
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
   width: 100%;
-`;
-const Board = styled.div`
-  padding: 20px 10px;
-  padding-top: 30px;
-  background-color: ${(props) => props.theme.boardColor};
-  border-radius: 5px;
-  min-height: 200px;
-`;
-
-const Card = styled.div`
-  border-radius: 5px;
-  margin-bottom: 5px;
-  padding: 10px 10px;
-  background-color: ${(props) => props.theme.cardColor};
 `;
 
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
-  const onDrageEnd = ({ draggableId, destination, source }: DropResult) => {
-    //splice는 array에서 한 부분을 수정하고 변형시킴
-    if (!destination) return;
-    setToDos((oldToDos) => {
-      //toDo들을 복사해옴
-      const copyToDos = [...oldToDos];
-      // 1) delete item on source.index
-      copyToDos.splice(source.index, 1);
-      // 2) aput back the  item on destination.index
-      copyToDos.splice(destination?.index, 0, draggableId);
+  const onDrageEnd = (info: DropResult) => {
+    const { destination, draggableId, source } = info;
 
-      return copyToDos;
-    });
+    if (!destination) return;
+
+    if (destination?.droppableId === source.droppableId) {
+      // same board movement.
+      //splice는 array에서 한 부분을 수정하고 변형시킴
+      setToDos((allBoards) => {
+        //toDo들을 복사해옴 (spread연산자로 만드는 이유 : 완전히 새로운 배열 생성을 위함)
+        const boardCopy = [...allBoards[source.droppableId]];
+
+        //todo의 정보를 받아옴
+        const taskObj = boardCopy[source.index];
+        // 1) delete item on source.index
+        boardCopy.splice(source.index, 1);
+        // 2) aput back the  item on destination.index
+        boardCopy.splice(destination?.index, 0, taskObj);
+
+        //이전거에 새로운 보드를 추가해주는 것
+        return {
+          ...allBoards,
+          [source.droppableId]: boardCopy,
+        };
+      });
+    }
+
+    if (destination.droppableId !== source.droppableId) {
+      //cross board movement
+      setToDos((allBoards) => {
+        const sourceBoard = [...allBoards[source.droppableId]];
+        const taskObj = sourceBoard[source.index];
+        const destinationBoard = [...allBoards[destination.droppableId]];
+        // 1) delete item on source.index
+        sourceBoard.splice(source.index, 1);
+        // 2) aput back the  item on destination.index
+        destinationBoard.splice(destination?.index, 0, taskObj);
+        return {
+          ...allBoards,
+          [source.droppableId]: sourceBoard,
+          [destination.droppableId]: destinationBoard,
+        };
+      });
+    }
   };
   return (
     <DragDropContext onDragEnd={onDrageEnd}>
       <Wrapper>
         <Boards>
-          <Droppable droppableId="one">
-            {(magic) => (
-              <Board ref={magic.innerRef} {...magic.droppableProps}>
-                {toDos.map((toDo, index) => (
-                  <Draggable key={toDo} draggableId={toDo} index={index}>
-                    {(magic) => (
-                      <Card
-                        ref={magic.innerRef}
-                        {...magic.dragHandleProps}
-                        {...magic.draggableProps}
-                      >
-                        {toDo}
-                      </Card>
-                    )}
-                  </Draggable>
-                ))}
-                {/* board의 사이즈가 변하지 않도록 */}
-                {magic.placeholder}
-              </Board>
-            )}
-          </Droppable>
+          {Object.keys(toDos).map((boardId) => (
+            <Board boardId={boardId} key={boardId} toDos={toDos[boardId]} />
+          ))}
         </Boards>
       </Wrapper>
     </DragDropContext>
