@@ -1,8 +1,13 @@
 import styled from "styled-components";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  useViewportScroll,
+} from "framer-motion";
 import { useEffect, useRef } from "react";
-const Wrapper = styled.div`
-  height: 100vh;
+const Wrapper = styled(motion.div)`
+  height: 200vh;
   width: 100vw;
   display: flex;
   justify-content: center;
@@ -27,13 +32,30 @@ function App() {
   //컴포넌트가 움직이더라도 재렌더링하지않음 -> 성능향상
   const x = useMotionValue(0);
 
-  //범위를 정해두면 그범위로 출력하는 것이 아닌 직접 지정한 상수값 범위에서 추적이 가능
-  const potato = useTransform(x, [-800, 0, 800], [2, 1, 0.1]);
+  //-800~800으로이동시 컴포넌트를 360도 돌림
+  const rotateZ = useTransform(x, [-800, 800], [-360, 360]);
   //useEffect와 같이 사용해야 확인할 수 있음
   useEffect(() => {}, [x]);
+
+  //-800~800을 이동하면 백그라운드 색상이 변함
+  const gradient = useTransform(
+    x,
+    [-800, 800],
+    [
+      "linear-gradient(135deg, rgb(0, 210, 238), rgb(0, 8, 238))",
+      "linear-gradient(135deg, rgb(0, 238, 155), rgb(238, 178, 0))",
+    ]
+  );
+
+  //scroll을 내려갈수록 박스가 작아짐
+  const { scrollYProgress } = useViewportScroll();
+
+  //지정범위에따라 박스의 크기가 달라짐
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 5]);
+
   return (
-    <Wrapper>
-      <Box style={{ x, scale: potato }} drag="x" dragSnapToOrigin />
+    <Wrapper style={{ background: gradient }}>
+      <Box style={{ x, rotateZ, scale }} drag="x" dragSnapToOrigin />
     </Wrapper>
   );
 }
