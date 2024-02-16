@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { motion, useMotionValue } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useEffect, useRef } from "react";
 const Wrapper = styled.div`
   height: 100vh;
@@ -26,15 +26,14 @@ function App() {
   //x를 지속적으로 추적
   //컴포넌트가 움직이더라도 재렌더링하지않음 -> 성능향상
   const x = useMotionValue(0);
+
+  //범위를 정해두면 그범위로 출력하는 것이 아닌 직접 지정한 상수값 범위에서 추적이 가능
+  const potato = useTransform(x, [-800, 0, 800], [2, 1, 0.1]);
   //useEffect와 같이 사용해야 확인할 수 있음
-  useEffect(() => {
-    x.onChange(() => console.log(x.get()));
-  }, [x]);
+  useEffect(() => {}, [x]);
   return (
     <Wrapper>
-      {/* set함수를 써서 버튼 클릭시 컴포넌트의 위치를 수정할 수 있음 */}
-      <button onClick={() => x.set(200)}>click me</button>
-      <Box style={{ x }} drag="x" dragSnapToOrigin />
+      <Box style={{ x, scale: potato }} drag="x" dragSnapToOrigin />
     </Wrapper>
   );
 }
