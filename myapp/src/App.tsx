@@ -1,23 +1,12 @@
 import styled from "styled-components";
-import { motion } from "framer-motion";
-import { useRef } from "react";
+import { motion, useMotionValue } from "framer-motion";
+import { useEffect, useRef } from "react";
 const Wrapper = styled.div`
   height: 100vh;
   width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const BiggerBox = styled(motion.div)`
-  width: 600px;
-  height: 600px;
-  background-color: rgba(255, 255, 255, 0.4);
-  border-radius: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
 `;
 
 const Box = styled(motion.div)`
@@ -34,25 +23,18 @@ const boxVariants = {
 };
 
 function App() {
-  //reference 생성
-  const biggerBoxRef = useRef<HTMLDivElement>(null);
+  //x를 지속적으로 추적
+  //컴포넌트가 움직이더라도 재렌더링하지않음 -> 성능향상
+  const x = useMotionValue(0);
+  //useEffect와 같이 사용해야 확인할 수 있음
+  useEffect(() => {
+    x.onChange(() => console.log(x.get()));
+  }, [x]);
   return (
     <Wrapper>
-      {/* 레퍼런스 연결 */}
-      <BiggerBox ref={biggerBoxRef}>
-        <Box
-          drag
-          //마우스를 놓으면 원래 위치로 돌아가도록
-          dragSnapToOrigin
-          //마우스 포인터를 정확히 당기도록 (마우스로 당기는 힘 ==elastic)
-          dragElastic={1}
-          dragConstraints={biggerBoxRef}
-          variants={boxVariants}
-          whileHover="hover"
-          whileDrag="drag"
-          whileTap="click"
-        />
-      </BiggerBox>
+      {/* set함수를 써서 버튼 클릭시 컴포넌트의 위치를 수정할 수 있음 */}
+      <button onClick={() => x.set(200)}>click me</button>
+      <Box style={{ x }} drag="x" dragSnapToOrigin />
     </Wrapper>
   );
 }
